@@ -12,11 +12,9 @@
                              gl-utils-ply gl-utils-mesh
                              gl-utils-bytevector))
    (extension gl-utils-core
-     (csc-options "-Dgles" "-C" "-DGLES")
      (link-options "-L" "-lepoxy"))
    (extension gl-utils-ply
      (component-dependencies gl-utils-bytevector gl-utils-mesh))
    (extension gl-utils-bytevector)
    (extension gl-utils-mesh
-     (csc-options "-Dgles" "-C" "-DGLES")
      (component-dependencies gl-utils-core gl-utils-bytevector))))

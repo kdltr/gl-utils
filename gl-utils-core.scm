@@ -68,9 +68,7 @@ static void showInfoLog(GLuint object){
     ((int: int32: integer: integer32: uint: uint32: unsigned-int: unsigned-int32:
 	   unsigned-integer: unsigned-integer32: float: float32:)
      4)
-    ((double: float64:) (cond-expand
-                          ((not gles) 8)
-                          (else (error 'type->bytes "Doubles not a valid ES type"))))))
+    ((double: float64:) 8)))
 
 (define (type->gl type)
   (ecase type
@@ -83,9 +81,7 @@ static void showInfoLog(GLuint object){
 	    unsigned-integer: unsigned-integer32:)
      gl:+unsigned-int+)
     ((float: float32:) gl:+float+)
-    ((double: float64:) (cond-expand
-                          ((not gles) gl:+double+)
-                          (else (error 'type->bytes "Doubles not a valid ES type"))))))
+    ((double: float64:) gl:+double+)))
 
 (define make-shader
   (foreign-lambda* unsigned-int ((unsigned-int type) (c-string source))
