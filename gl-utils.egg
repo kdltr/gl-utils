@@ -15,7 +15,6 @@
    (extension gl-utils-core
      (csc-options "-Dgles" "-C" "-DGLES")
      (link-options "-L" "-lGL -lGLEW"))
-   #;(extension gl-utils-srfi-4)
    #;(extension gl-utils-ply
      (component-dependencies gl-utils-bytevector gl-utils-mesh))
    (extension gl-utils-bytevector)
