@@ -1,7 +1,6 @@
 (module gl-utils ()
 
-(import chicken scheme)
-(use gl-utils-core gl-utils-ply gl-utils-bytevector gl-utils-mesh)
+(import scheme (chicken module) gl-utils-core gl-utils-ply gl-utils-bytevector gl-utils-mesh)
 
 (reexport gl-utils-core gl-utils-ply gl-utils-bytevector gl-utils-mesh)
 

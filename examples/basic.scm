@@ -1,7 +1,13 @@
 ;; This example illustrates drawing a basic mesh
 
-(import chicken scheme)
-(use (prefix glfw3 glfw:) (prefix opengl-glew gl:) gl-math gl-utils)
+(import
+  scheme
+  (chicken base)
+  (chicken bitwise)
+  (prefix glfw3 #:glfw)
+  (prefix epoxy #:gl)
+  gl-math
+  gl-utils)
 
 (define *vertex* 
 #<<END
@@ -78,7 +84,6 @@ END
      (glfw:set-window-should-close window #t)))))
 
 (glfw:with-window (640 480 "Example" resizable: #f)
-  (gl:init)
   (set! *vertex* (make-shader gl:+vertex-shader+ *vertex*))
   (set! *fragment* (make-shader gl:+fragment-shader+ *fragment*))
   (program (make-program (list *vertex* *fragment*)))

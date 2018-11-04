@@ -1,9 +1,24 @@
 (module gl-utils-ply (load-ply
                       load-ply-mesh)
 
-(import chicken scheme)
-(use (prefix epoxy gl:) gl-utils-core gl-utils-bytevector gl-utils-mesh
-     z3 matchable srfi-42 miscmacros files srfi-1 srfi-13 extras data-structures ports)
+(import
+  scheme
+  (chicken base)
+  (chicken io)
+  (chicken pathname)
+  (chicken platform)
+  (chicken port)
+  (chicken keyword)
+  (prefix epoxy #:gl)
+  gl-utils-core
+  gl-utils-bytevector
+  gl-utils-mesh
+  z3
+  matchable
+  srfi-42
+  miscmacros
+  srfi-1
+  srfi-13)
 
 ;;; Ply
 (define data-format (make-parameter #f))

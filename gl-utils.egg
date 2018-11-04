@@ -3,19 +3,18 @@
  (author "Alex Charlton")
  (category graphics)
  (license "BSD")
- #;(dependencies srfi-1 z3 matchable miscmacros srfi-99 srfi-42 make opengl-glew gl-math)
- (dependencies srfi-1 matchable miscmacros srfi-99 epoxy gl-math)
+ (dependencies srfi-1 z3 matchable miscmacros srfi-99 srfi-42 epoxy gl-math)
  (test-dependencies test)
  (foreign-dependencies "OpenGL")
  (components
-   #;(extension gl-utils
-     (component-dependencies gl-utils-core gl-utils-srfi-4
+   (extension gl-utils
+     (component-dependencies gl-utils-core
                              gl-utils-ply gl-utils-mesh
                              gl-utils-bytevector))
    (extension gl-utils-core
      (csc-options "-Dgles" "-C" "-DGLES")
      (link-options "-L" "-lepoxy"))
-   #;(extension gl-utils-ply
+   (extension gl-utils-ply
      (component-dependencies gl-utils-bytevector gl-utils-mesh))
    (extension gl-utils-bytevector)
    (extension gl-utils-mesh

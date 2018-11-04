@@ -1,7 +1,13 @@
 ;; This example illustrates streaming mesh data using mesh-vertex-set!
 
-(import chicken scheme)
-(use (prefix glfw3 glfw:) (prefix opengl-glew gl:) gl-math gl-utils srfi-4)
+(import
+  scheme
+  (chicken bitwise)
+  (prefix glfw3 #:glfw)
+  (prefix epoxy #:gl)
+  gl-math
+  gl-utils
+  srfi-4)
 
 (define *vertex* 
 #<<END
@@ -92,7 +98,6 @@ END
 (glfw:with-window (640 480 "Example" resizable: #f
                        context-version-major: 3
                        context-version-minor: 3)
-  (gl:init)
   (set! *vertex* (make-shader gl:+vertex-shader+ *vertex*))
   (set! *fragment* (make-shader gl:+fragment-shader+ *fragment*))
   (program (make-program (list *vertex* *fragment*)))
