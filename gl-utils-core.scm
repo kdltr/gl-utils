@@ -42,24 +42,14 @@
         (chicken blob)
         srfi-4
         matchable
-        (prefix opengl-glew gl:)
+        (prefix epoxy gl:)
         miscmacros
         srfi-1)
 
 #>
 #include <stdlib.h>
 #include <stdio.h>
-#if defined (__APPLE__)
-#include <OpenGL/gl.h>
-#elif defined (_WIN32)
-#include <GL/glew.h>
-#include <GL/glext.h>
-#include <GL/gl.h>
-#elif defined (GLES)
-#include <GLES3/gl3.h>
-#else
-#include <GL/gl.h>
-#endif
+#include <epoxy/gl.h>
 static void showInfoLog(GLuint object){
     GLint logLength;
     char *log;

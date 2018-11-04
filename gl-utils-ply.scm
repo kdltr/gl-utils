@@ -2,7 +2,7 @@
                       load-ply-mesh)
 
 (import chicken scheme)
-(use (prefix opengl-glew gl:) gl-utils-core gl-utils-bytevector gl-utils-mesh
+(use (prefix epoxy gl:) gl-utils-core gl-utils-bytevector gl-utils-mesh
      z3 matchable srfi-42 miscmacros files srfi-1 srfi-13 extras data-structures ports)
 
 ;;; Ply

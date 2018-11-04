@@ -40,7 +40,7 @@
         (chicken fixnum)
         (chicken flonum)
         (prefix gl-utils-core gl:)
-        (prefix opengl-glew gl:)
+        (prefix epoxy gl:)
         gl-utils-bytevector
         srfi-1
         srfi-4
