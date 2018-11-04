@@ -30,10 +30,24 @@
                        usage->gl
                        mode->gl)
 
-(import chicken scheme foreign)
-(use (prefix gl-utils-core gl:) (prefix opengl-glew gl:) gl-utils-bytevector
-     srfi-1 srfi-4 srfi-99 miscmacros matchable extras lolevel gl-math
-     data-structures)
+(import scheme
+        (chicken base)
+        (chicken foreign)
+        (chicken format)
+        (chicken keyword)
+        (chicken gc)
+        (chicken memory)
+        (chicken fixnum)
+        (chicken flonum)
+        (prefix gl-utils-core gl:)
+        (prefix opengl-glew gl:)
+        gl-utils-bytevector
+        srfi-1
+        srfi-4
+        srfi-99
+        miscmacros
+        matchable
+        gl-math)
 
 ;;;; Mesh record
 (define-record-type mesh

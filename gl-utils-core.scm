@@ -35,8 +35,16 @@
                        ->pointer
                        size)
 
-(import chicken scheme foreign)
-(use srfi-4 matchable (prefix opengl-glew gl:) miscmacros srfi-1 lolevel)
+(import scheme
+        (chicken base)
+        (chicken foreign)
+        (chicken locative)
+        (chicken blob)
+        srfi-4
+        matchable
+        (prefix opengl-glew gl:)
+        miscmacros
+        srfi-1)
 
 #>
 #include <stdlib.h>

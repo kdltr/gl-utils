@@ -1,7 +1,10 @@
 (module gl-utils-bytevector *
 
-(import chicken scheme foreign)
-(use srfi-4 srfi-1)
+(import scheme
+        (chicken base)
+        (chicken foreign)
+        srfi-4
+        srfi-1)
 
 ;; Setting
 (define bytevector-u8-set!
