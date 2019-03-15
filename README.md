@@ -6,23 +6,23 @@ Provides a higher level interface to OpenGL. The following modules are included:
 - gl-utils-bytevector: OpenGL-safe R7RS style bytevectors with extended accessors
 - gl-utils-mesh: Convenient vertex array interface for creation, modification, and use
 - gl-utils-ply: [PLY](http://paulbourke.net/dataformats/ply/) file loading
-- gl-utils-srfi-4: OpenGL-safe numeric vectors
 
-gl-utils is known to work on Linux, Mac OS X, Windows, and with OpenGL ES. gl-utils will automatically compile with ES support on ARM hardware, or when `gles` is defined during compilation (e.g. `chicken-install -D gles`).
+gl-utils is known to work on Linux, Mac OS X, Windows, and with OpenGL ES.
 
 ## Installation
-This repository is a [Chicken Scheme](http://call-cc.org/) egg.
+This repository is a [Chicken Scheme](https://call-cc.org/) egg.
 
-It is part of the [Chicken egg index](http://wiki.call-cc.org/chicken-projects/egg-index-4.html) and can be installed with `chicken-install gl-utils`.
+It is part of the [Chicken egg index](https://eggs.call-cc.org/5/) and can be installed with `chicken-install gl-utils`.
 
 ## Requirements
+- srfi-1
 - z3
 - matchable
 - miscmacros
 - srfi-42
-- opengl-glew
+- srfi-99
+- epoxy
 - gl-math
-- make
 
 ## Documentation
 ### gl-utils-core
@@ -315,15 +315,6 @@ Again, for a PLY file that has element `vertex` with properties `float x`, `floa
 This would create a mesh with vertex attributes `(position #:float 3)` and `(color #:unsigned-byte 3 normalized: #t)` and the `#:unsigned-short` indices given by `vertex_index`.
 
 
-### gl-utils-srfi-4
-**This module has been deprecated. With gl-utils-mesh and gl-utils-bytevector, this functionality is better served by directly using srfi-4. This module may still be accessed by explicitly using gl-utils-srfi-4 for the time-being, but it will be removed in the future.**
-
-gl-utils-srfi-4 reexports a version of [srfi-4](http://api.call-cc.org/doc/srfi-4) that gives preference to vectors being created in non-garbage collected memory. This is useful for use with OpenGL, since it is often desirable to pass vectors to OpenGL that will remain in one place. All srfi-4 functions not mentioned below are reexported without changes.
-
-The `NNNvector` and `list->NNNvector` constructors have been modified so that they return vectors in non-garbage collected memory. They will still be freed when no longer used.
-
-The `make-NNNvector` constructors act as their srfi-4 counterparts, except they return vectors in non-garbage collected memory by default. They will still be freed when non longer used.
-
 
 ## Examples
 This example depends on the [opengl-glew](http://wiki.call-cc.org/eggref/4/opengl-glew) egg, the [glfw3](http://wiki.call-cc.org/eggref/4/glfw3) egg for window and context creation, and the [gl-math](http://wiki.call-cc.org/eggref/4/gl-math) egg for matrix math.
@@ -331,15 +322,23 @@ This example depends on the [opengl-glew](http://wiki.call-cc.org/eggref/4/openg
 For more examples, check out the [examples directory](https://github.com/AlexCharlton/gl-utils/tree/master/examples).
 
 ```Scheme
-(import chicken scheme)
-(use (prefix glfw3 glfw:) (prefix opengl-glew gl:) gl-math gl-utils)
+;; This example illustrates drawing a basic mesh
+
+(import
+  scheme
+  (chicken base)
+  (chicken bitwise)
+  (prefix glfw3 #:glfw)
+  (prefix epoxy #:gl)
+  gl-math
+  gl-utils)
 
 (define *vertex* 
 #<<END
-#version 330
-in vec2 position;
-in vec3 color;
-out vec3 c;
+#version 120
+attribute vec2 position;
+attribute vec3 color;
+varying vec3 c;
 uniform mat4 MVP;
 
 void main(){
@@ -351,11 +350,10 @@ END
 
 (define *fragment*
 #<<END
-#version 330
-in vec3 c;
-out vec4 fragColor;
+#version 120
+varying vec3 c;
 void main(){
-  fragColor = vec4(c, 1.0);
+  gl_FragColor = vec4(c, 1.0);
 }
 END
 )
@@ -364,10 +362,10 @@ END
               vertices: '(attributes: ((position #:float 2)
                                        (color #:unsigned-byte 3
                                               normalized: #t))
-                          initial-elements: ((position . (-1 -1
-                                                           1 -1
-                                                           1  1
-                                                           -1  1))
+                          initial-elements: ((position . (-1.0 -1.0
+                                                           1.0 -1.0
+                                                           1.0  1.0
+                                                           -1.0  1.0))
                                              (color . (255 0   0
                                                        0   255 0
                                                        0   0   255
@@ -395,25 +393,24 @@ END
                         (m* projection-matrix
                             (m* view-matrix model-matrix)))
   (gl:bind-vertex-array (mesh-vao rect))
-  (gl:draw-elements-base-vertex (mode->gl (mesh-mode rect))
-                                (mesh-n-indices rect)
-                                (type->gl (mesh-index-type rect))
-                                #f 0)
+  (gl:draw-elements (mode->gl (mesh-mode rect))
+                    (mesh-n-indices rect)
+                    (type->gl (mesh-index-type rect))
+                    #f)
 
   (check-error)
   (gl:bind-vertex-array 0))
 
-(glfw:with-window (640 480 "Example" resizable: #f
-                       context-version-major: 3
-                       context-version-minor: 3)
-  (gl:init)
+(glfw:key-callback
+ (lambda (window key scancode action mods)
+   (cond
+    ((and (eq? key glfw:+key-escape+) (eq? action glfw:+press+))
+     (glfw:set-window-should-close window #t)))))
 
-  (print (gl:supported? "GL_ARB_framebuffer_object"))
-
+(glfw:with-window (640 480 "Example" resizable: #f)
   (set! *vertex* (make-shader gl:+vertex-shader+ *vertex*))
   (set! *fragment* (make-shader gl:+fragment-shader+ *fragment*))
   (program (make-program (list *vertex* *fragment*)))
-
   (mesh-make-vao! rect `((position . ,(gl:get-attrib-location
                                        (program) "position"))
                          (color . ,(gl:get-attrib-location
@@ -422,12 +419,19 @@ END
     (glfw:swap-buffers (glfw:window))
     (gl:clear (bitwise-ior gl:+color-buffer-bit+ gl:+depth-buffer-bit+))
     (render)
-    (glfw:poll-events) ; Because of the context version, initializing GLEW results in a harmless invalid enum
+    (glfw:poll-events)
     (unless (glfw:window-should-close (glfw:window))
       (loop))))
 ```
 
 ## Version history
+### Version 0.8.0
+15 March 2019
+
+* Maintenance given to [Kooda](/users/kooda)
+* Port to CHICKEN 5
+* Removed deprecated module gl-utils-srfi-4
+
 ### Version 0.7.0
 24 April 2016
 
@@ -471,12 +475,14 @@ END
 * Initial release
 
 ## Source repository
-Source available on [GitHub](https://github.com/AlexCharlton/gl-utils).
+Source available [here](https://www.upyum.com/cgit.cgi/gl-utils/).
 
-Bug reports and patches welcome! Bugs can be reported via GitHub or to alex.n.charlton at gmail.
+Bug reports and patches welcome! Bugs can be reported to kooda@upyum.com
 
-## Author
+## Authors
 Alex Charlton
+
+Adrien (Kooda) Ramos
 
 ## License
 BSD

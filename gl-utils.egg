@@ -1,18 +1,18 @@
-((version "0.8.0")
- (synopsis "High(er) level tools for OpenGL")
+((synopsis "High(er) level tools for OpenGL")
  (author "Alex Charlton")
+ (maintainer "Adrien (Kooda) Ramos")
  (category graphics)
  (license "BSD")
  (dependencies srfi-1 z3 matchable miscmacros srfi-99 srfi-42 epoxy gl-math)
  (test-dependencies test)
- (foreign-dependencies "OpenGL")
+ (foreign-dependencies "epoxy")
  (components
    (extension gl-utils
      (component-dependencies gl-utils-core
                              gl-utils-ply gl-utils-mesh
                              gl-utils-bytevector))
    (extension gl-utils-core
-     (link-options "-L" "-lepoxy"))
+     (custom-build build-epoxy))
    (extension gl-utils-ply
      (component-dependencies gl-utils-bytevector gl-utils-mesh))
    (extension gl-utils-bytevector)
